@@ -31,7 +31,7 @@
             "source": "./",
             "strict": false,
             "skills": [
-                "./.claude/skills/wxauto-dev"
+                "./skills/wxauto-dev"
             ],
             "category": "automation",
             "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
