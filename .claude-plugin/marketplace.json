@@ -1,0 +1,24 @@
+{
+    "name": "wxauto-skills",
+    "owner": {
+        "name": "wxauto",
+        "email": "contact@wxauto.org"
+    },
+    "metadata": {
+        "description": "微信自动化 Claude Code Skills - 快速构建微信机器人应用",
+        "version": "1.0.0"
+    },
+    "plugins": [
+        {
+            "name": "wxauto-dev",
+            "description": "快速构建完善的微信自动化机器人应用，支持消息监听、自动回复、群管理等功能。基于 wxautox4 库，生成生产级代码，包含完善的错误处理和重试机制。",
+            "source": "./",
+            "strict": false,
+            "skills": [
+                "./.claude/skills/wxauto-dev"
+            ],
+            "category": "automation",
+            "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
+        }
+    ]
+}
