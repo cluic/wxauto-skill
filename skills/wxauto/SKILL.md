@@ -71,7 +71,7 @@ metadata:
 
 1. **命令行参数**
    ```powershell
-   python wxapi.py --base-url "http://localhost:9000" --token "my-token" send "好友" "消息"
+   python scripts/wxapi.py --base-url "http://localhost:9000" --token "my-token" send "好友" "消息"
    ```
 
 2. **环境变量**
@@ -114,11 +114,15 @@ Start-Process python -ArgumentList "run.py" -WorkingDirectory "C:\path\to\wxauto
 
 ## 脚本路径
 
-Python 调用脚本位于 skill 目录下的 `scripts/wxapi.py`。
+调用脚本使用相对于 skill 目录根的相对路径（agent 会自动解析为绝对路径）：
 
-使用 `{baseDir}` 引用 skill 目录：
-```powershell
-python "{baseDir}/scripts/wxapi.py" send "好友" "消息"
+```bash
+python scripts/wxapi.py send "好友" "消息"
+```
+
+查看帮助：
+```bash
+python scripts/wxapi.py --help
 ```
 
 ## 可用命令
@@ -127,97 +131,97 @@ python "{baseDir}/scripts/wxapi.py" send "好友" "消息"
 
 ```powershell
 # 初始化微信实例
-python wxapi.py init
+python scripts/wxapi.py init
 
 # 获取服务状态
-python wxapi.py status
+python scripts/wxapi.py status
 
 # 检查是否在线
-python wxapi.py online
+python scripts/wxapi.py online
 
 # 获取我的信息
-python wxapi.py myinfo
+python scripts/wxapi.py myinfo
 ```
 
 ### 发送消息
 
 ```powershell
 # 主窗口发送
-python wxapi.py send "好友名" "消息内容"
+python scripts/wxapi.py send "好友名" "消息内容"
 
 # 精确匹配
-python wxapi.py send "好友名" "消息内容" --exact
+python scripts/wxapi.py send "好友名" "消息内容" --exact
 
 # @群成员
-python wxapi.py send "群名" "开会了" --at "张三,李四"
+python scripts/wxapi.py send "群名" "开会了" --at "张三,李四"
 
 # 子窗口发送
-python wxapi.py send-chat "好友名" "消息内容"
+python scripts/wxapi.py send-chat "好友名" "消息内容"
 ```
 
 ### 读取消息
 
 ```powershell
 # 获取聊天记录（主窗口）
-python wxapi.py getmsg "好友名"
+python scripts/wxapi.py getmsg "好友名"
 
 # 获取聊天记录（子窗口）
-python wxapi.py getmsg-chat "好友名"
+python scripts/wxapi.py getmsg-chat "好友名"
 
 # 获取历史消息
-python wxapi.py history "好友名" --count 100
+python scripts/wxapi.py history "好友名" --count 100
 
 # 获取新消息（主窗口轮询）
-python wxapi.py newmsg
+python scripts/wxapi.py newmsg
 
 # 获取新消息（子窗口）
-python wxapi.py newmsg-chat "好友名"
+python scripts/wxapi.py newmsg-chat "好友名"
 ```
 
 ### 监听管理
 
 ```powershell
 # 添加监听（打开子窗口）
-python wxapi.py listen "好友名"
+python scripts/wxapi.py listen "好友名"
 ```
 
 ### 会话管理
 
 ```powershell
 # 获取会话列表
-python wxapi.py session
+python scripts/wxapi.py session
 
 # 获取所有子窗口
-python wxapi.py windows
+python scripts/wxapi.py windows
 
 # 切换聊天窗口
-python wxapi.py chatwith "好友名" --exact
+python scripts/wxapi.py chatwith "好友名" --exact
 ```
 
 ### 获取列表
 
 ```powershell
 # 好友列表
-python wxapi.py friends
+python scripts/wxapi.py friends
 
 # 群聊列表
-python wxapi.py groups
+python scripts/wxapi.py groups
 ```
 
 ### 页面控制
 
 ```powershell
 # 切换到聊天页面
-python wxapi.py switch-chat
+python scripts/wxapi.py switch-chat
 
 # 切换到联系人页面
-python wxapi.py switch-contact
+python scripts/wxapi.py switch-contact
 ```
 
 ### 查看帮助
 
 ```powershell
-python wxapi.py --help
+python scripts/wxapi.py --help
 ```
 
 ## API 接口列表
@@ -280,6 +284,38 @@ print(resp.json())
   "data": { ... }
 }
 ```
+
+## 服务未运行时的处理
+
+当执行命令发现 wxauto-restful-api 服务未运行且无法自动启动时，**不要直接报错**，而是使用询问用户的相关工具（如有）询问用户，如没有相关工具可停止对话问用户是否要帮忙启动：
+
+提问内容：「wxauto-restful-api 服务未运行，是否需要我帮你自动部署并启动？」
+
+选项：
+1. **自动部署并启动** - 从 GitHub 克隆项目，创建虚拟环境，安装依赖，启动服务
+2. **仅启动服务** - 服务目录已存在，只需启动（需用户提供路径）
+3. **跳过** - 用户自行处理
+
+如果用户选择「自动部署并启动」，执行以下步骤：
+
+```bash
+# 1. 克隆项目到用户目录
+cd ~
+git clone https://github.com/cluic/wxauto-restful-api.git
+
+# 2. 创建虚拟环境
+cd wxauto-restful-api
+python -m venv .venv
+
+# 3. 激活虚拟环境并安装依赖
+# Windows:
+.venv/Scripts/activate && pip install -r requirements.txt
+
+# 4. 后台启动服务
+python run.py
+```
+
+启动后验证服务是否正常运行（检查健康接口），然后继续执行用户原本的操作。
 
 ## 注意事项
 
