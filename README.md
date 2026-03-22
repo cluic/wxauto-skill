@@ -51,7 +51,7 @@ clawhub install wxauto
 
 第二步：安装插件
 ```
-/plugin add wxauto
+/plugin add wxauto-dev
 ```
 
 
