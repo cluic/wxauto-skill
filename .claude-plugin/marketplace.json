@@ -15,7 +15,7 @@
       "source": "./skills/wxauto",
       "strict": false,
       "skills": [
-        "."
+        "./"
       ],
       "category": "automation",
       "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
@@ -26,7 +26,7 @@
       "source": "./skills/wxauto-dev",
       "strict": false,
       "skills": [
-        "."
+        "./"
       ],
       "category": "automation",
       "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
