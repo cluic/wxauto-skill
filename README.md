@@ -42,20 +42,7 @@ clawhub install wxauto
 <details>
 <summary>点击展开 Claude Code 安装说明</summary>
 
-#### 方法一：一键安装（Windows）
-
-1. 下载本仓库
-2. 双击运行 `claude-code-install.bat`
-3. 重启 Claude Code
-
-#### 方法二：手动安装
-
-```powershell
-# 将skill复制到 Claude Code 技能目录
-Copy-Item -Path ".\skills\wxauto-dev" -Destination "$env:USERPROFILE\.claude\skills\wxauto-dev" -Recurse -Force
-```
-
-#### 方法三：通过插件市场安装
+#### 通过插件市场安装
 
 第一步：添加插件库
 ```
