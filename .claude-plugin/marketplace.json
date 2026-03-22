@@ -14,6 +14,9 @@
       "description": "微信自动化操作。通过 wxautox4 RESTful API 实现发送消息、获取聊天记录、监听消息、好友管理等功能。",
       "source": "./skills/wxauto",
       "strict": false,
+      "commands": [
+        "./"
+      ],
       "category": "automation",
       "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
     },
@@ -22,6 +25,9 @@
       "description": "快速构建完善的微信自动化机器人应用，支持消息监听、自动回复、群管理等功能。基于 wxautox4 库，生成生产级代码，包含完善的错误处理和重试机制。",
       "source": "./skills/wxauto-dev",
       "strict": false,
+      "commands": [
+        "./"
+      ],
       "category": "automation",
       "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
     }
