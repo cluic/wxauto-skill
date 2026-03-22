@@ -3,7 +3,7 @@ chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 echo ========================================
-echo   wxauto Skill Installer for OpenClaw
+echo   wxauto Skill Installer
 echo ========================================
 echo.
 
