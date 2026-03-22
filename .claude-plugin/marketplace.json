@@ -10,12 +10,23 @@
   },
   "plugins": [
     {
+      "name": "wxauto",
+      "description": "快速构建完善的微信自动化机器人应用，支持消息监听、自动回复、群管理等功能。基于 wxautox4 库，生成生产级代码，包含完善的错误处理和重试机制。",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/wxauto"
+      ],
+      "category": "automation",
+      "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
+    },
+    {
       "name": "wxauto-dev",
       "description": "快速构建完善的微信自动化机器人应用，支持消息监听、自动回复、群管理等功能。基于 wxautox4 库，生成生产级代码，包含完善的错误处理和重试机制。",
       "source": "./",
       "strict": false,
       "skills": [
-        "./.claude/skills/wxauto-dev"
+        "./skills/wxauto-dev"
       ],
       "category": "automation",
       "tags": ["wechat", "automation", "bot", "wxauto", "messaging"]
