@@ -19,6 +19,9 @@ npx skills add cluic/wxauto-skill
 
 ![通过npx安装](./images/npx-skill.png)
 
+***
+### 其他安装示例
+
 ### OpenClaw
 
 <details>
@@ -66,32 +69,18 @@ clawhub install wxauto
 </details>
 
 
-## 服务配置（必须）
-
-1. 克隆 wxauto-restful-api：
-   ```bash
-   git clone https://github.com/cluic/wxauto-restful-api
-   ```
-
-2. 配置 `config.yaml`
-
-3. 启动服务：
-   ```bash
-   python run.py
-   ```
-
 ## 使用方法
 
-### OpenClaw
-安装完成后，重启 OpenClaw 并尝试：
+### wxauto skill
+
 ```
 发微信给文件传输助手说你好
 ```
 
-### Claude Code
-安装完成后，重启 Claude Code 并尝试：
+### wxauto-dev skill
+
 ```
-帮我创建一个微信机器人，监听文件传输助手的消息并自动回复
+使用wxauto-dev帮我创建一个微信机器人，监听文件传输助手的消息并自动回复
 ```
 
 ## 相关链接
