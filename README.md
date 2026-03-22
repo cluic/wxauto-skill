@@ -77,6 +77,18 @@ clawhub install wxauto
 发微信给文件传输助手说你好
 ```
 
+```
+查看一下微信当前的会话列表
+```
+
+```
+获取一条新消息
+```
+
+```
+wxauto skill有哪些工具？
+```
+
 ### wxauto-dev skill
 
 ```
