@@ -11,6 +11,14 @@
 
 ## 安装方式
 
+### 使用npx安装，适用大部分AI应用（推荐）
+
+```
+npx skills add cluic/wxauto-skill
+```
+
+![通过npx安装](./images/npx-skill.png)
+
 ### OpenClaw
 
 <details>
