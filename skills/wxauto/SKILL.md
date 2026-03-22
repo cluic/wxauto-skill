@@ -61,9 +61,10 @@ metadata:
 3. 如果服务未运行，自动启动服务（需要服务目录存在）
 
 服务目录搜索顺序：
-- `../wxauto-restful-api`（相对于 skill 目录）
-- `~/wxauto-restful-api`
-- `WXAPI_SERVICE_DIR` 环境变量指定的路径
+1. `WXAPI_SERVICE_DIR` 环境变量指定的路径
+2. `~/.wxautox/service_status.json` 中记录的 `service_dir`（服务启动时自动写入项目绝对路径）
+3. `../wxauto-restful-api`（相对于 skill 目录）
+4. `~/wxauto-restful-api`
 
 ### 手动配置方式（可选）
 
@@ -114,7 +115,7 @@ Start-Process python -ArgumentList "run.py" -WorkingDirectory "C:\path\to\wxauto
 
 ## 脚本路径
 
-调用脚本使用相对于 skill 目录根的相对路径（agent 会自动解析为绝对路径）：
+调用脚本使用相对于 skill 目录根的相对路径：
 
 ```bash
 python scripts/wxapi.py send "好友" "消息"
@@ -287,12 +288,18 @@ print(resp.json())
 
 ## 服务未运行时的处理
 
-当执行命令发现 wxauto-restful-api 服务未运行且无法自动启动时，**不要直接报错**，而是使用询问用户的相关工具（如有）询问用户，如没有相关工具可停止对话问用户是否要帮忙启动：
+当执行命令发现 wxauto-restful-api 服务未运行时，wxapi.py 会按以下顺序尝试自动恢复：
+
+1. 检查 `~/.wxautox/service_status.json` 中的 `service_dir` 定位项目路径
+2. 搜索默认路径（见上方搜索顺序）
+3. 找到项目目录后自动启动服务
+
+如果以上都无法定位到项目目录，**不要直接报错**，而是使用询问用户的相关工具（如有）询问用户，如没有相关工具可停止对话问用户：
 
 提问内容：「wxauto-restful-api 服务未运行，是否需要我帮你自动部署并启动？」
 
 选项：
-1. **自动部署并启动** - 从 GitHub 克隆项目，创建虚拟环境，安装依赖，启动服务
+1. **自动部署并启动** - 从 GitHub 克隆项目，安装依赖，启动服务（启动后项目路径会自动记录到 `service_status.json`，后续无需再次配置）
 2. **仅启动服务** - 服务目录已存在，只需启动（需用户提供路径）
 3. **跳过** - 用户自行处理
 

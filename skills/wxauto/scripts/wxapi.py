@@ -45,7 +45,20 @@ def find_service_dir():
         env_path = Path(env_dir)
         if env_path.exists() and (env_path / "run.py").exists():
             return env_path
-    
+
+    # Check service_status.json for recorded service_dir
+    try:
+        if SERVICE_STATUS_FILE.exists():
+            with open(SERVICE_STATUS_FILE, 'r', encoding='utf-8') as f:
+                status = json.load(f)
+                saved_dir = status.get('service_dir')
+                if saved_dir:
+                    saved_path = Path(saved_dir)
+                    if saved_path.exists() and (saved_path / "run.py").exists():
+                        return saved_path
+    except Exception:
+        pass
+
     # Check default search paths
     for path in SERVICE_SEARCH_PATHS:
         if path.exists() and (path / "run.py").exists():
