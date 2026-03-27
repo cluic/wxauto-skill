@@ -1,120 +1,120 @@
 ---
 name: wxauto
 description: "微信自动化操作。通过 wxautox4 RESTful API 实现发送消息、获取聊天记录、监听消息、好友管理等功能。Use when: (1) 发送微信消息给好友或群聊，(2) 读取微信聊天记录，(3) 监听新消息，(4) 获取好友列表或群聊列表，(5) 接受好友申请，(6) 切换聊天窗口等微信操作。"
-metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "💬",
-        "requires": { "bins": ["python"] },
-        "install":
-          [
-            {
-              "id": "pip-wxautox4",
-              "kind": "pip",
-              "package": "wxautox4",
-              "label": "Install wxautox4 (pip)",
-            },
-          ],
-      },
-  }
+
 ---
 
 # 微信自动化
 
-通过本地 HTTP 服务操作微信，支持消息收发、监听、好友管理等功能。
+通过 wxautox4 RESTful API 操作微信，支持消息收发、监听、好友管理等功能。API 服务必须运行在 **Windows 设备**上（wxautox4 仅支持 Windows），可通过本地或远程方式连接。
 
-## 前置要求
+## 步骤 0：平台检测（最优先执行）
 
-1. **安装 wxautox4**：
-   
-   ```bash
-   pip install wxautox4
-   ```
-   
-   > 注意：需windows系统，python3.9,3.10,3.11,3.12 64位，其他python版本暂不支持
-   
-2. **激活 wxautox4**：
+**在做任何其他操作之前，先检测当前设备的操作系统**：
 
-   ```bash
-   wxautox4 -a your-activation-code
-   ```
+```python
+import platform
+print(platform.system())  # 返回 'Windows' / 'Darwin' / 'Linux'
+```
 
-   > 获取：https://docs.wxauto.org/plus
+根据结果走不同分支：
 
-3. **部署 API 服务**：
+---
 
-   - 克隆项目：https://github.com/cluic/wxauto-restful-api
-   - 配置 `config.yaml`
-   - 启动服务：`python run.py`
+### 非 Windows 设备（macOS / Linux）
+
+> wxautox4 服务只能运行在 Windows 上，**不要尝试在当前设备安装或启动服务**。
+
+直接询问用户远程服务信息（使用 AskUserQuestion 或等效工具）：
+
+```
+问题1：请提供 wxauto-restful-api 服务地址（例如 http://192.168.1.100:8000）
+问题2：请提供服务的 Bearer Token（见服务端 config.yaml 的 auth.token，默认为 token）
+```
+
+获取到地址和 token 后：
+1. 将配置写入环境变量或直接传入脚本参数
+2. 调用健康检查接口验证连通性：`GET /v1/wechat/status`
+3. 如果连接失败，提示用户检查：网络是否可达、服务是否已启动、token 是否正确
+4. 连接成功后直接执行用户操作，**不需要任何本地安装步骤**
+
+---
+
+### Windows 设备
+
+先检查本地服务是否已运行（读取 `~/.wxautox/service_status.json` 并做健康检查）：
+
+- **本地服务已运行**：自动连接，无需用户操作
+- **本地服务未运行**：询问用户选择方式（见下方「服务未运行时的处理」）
+
+---
 
 ## 服务配置
 
 - 认证：Bearer Token（见 `config.yaml` 的 `auth.token`，默认值为 `token`）
-- 服务状态文件：`~/.wxautox/service_status.json`（服务启动时自动生成，请查看该文件获取服务信息）
+- 服务状态文件：`~/.wxautox/service_status.json`（服务启动时自动生成，仅 Windows 本地部署时存在）
 
-### 自动配置检测
-
-服务启动后会自动将运行信息写入 `~/.wxautox/service_status.json`。wxapi.py 脚本会：
-1. 自动读取此文件获取连接配置
-2. 验证服务是否真的在运行（通过 API 健康检查）
-3. 如果服务未运行，调用询问用户相关工具，询问用户以哪种方式继续：
-  - 自动启动本地服务（需要服务目录存在）
-  - 手动开启本地服务
-  - 指定远程服务地址，指定远程服务后不需要在本地开启服务
-
-服务目录搜索顺序：
-1. `WXAPI_SERVICE_DIR` 环境变量指定的路径
-2. `~/.wxautox/service_status.json` 中记录的 `service_dir`（服务启动时自动写入项目绝对路径）
-3. `../wxauto-restful-api`（相对于 skill 目录）
-4. `~/wxauto-restful-api`
-
-### 手动配置方式（可选）
-
-如果需要覆盖自动配置，优先级从高到低：
+### 配置优先级（从高到低）
 
 1. **命令行参数**
-   ```powershell
-   python scripts/wxapi.py --base-url "http://localhost:9000" --token "my-token" send "好友" "消息"
+   ```bash
+   python scripts/wxapi.py --base-url "http://192.168.1.100:8000" --token "my-token" send "好友" "消息"
    ```
 
 2. **环境变量**
-   
-   ```powershell
-   $env:WXAPI_BASE_URL = "http://localhost:9000"
+   ```bash
+   # 通用（macOS/Linux/Windows）
+   export WXAPI_BASE_URL="http://192.168.1.100:8000"
+   export WXAPI_TOKEN="my-token"
+
+   # Windows PowerShell
+   $env:WXAPI_BASE_URL = "http://192.168.1.100:8000"
    $env:WXAPI_TOKEN = "my-token"
-   # 或者
-   $env:WXAPI_PORT = "9000"
-   $env:WXAPI_SERVICE_DIR = "/path/to/wxauto-restful-api"
    ```
 
-3. **service_status.json** - 自动检测（推荐）
+3. **service_status.json** - 自动检测（仅 Windows 本地部署时可用）
 
-4. **config.yaml** - 服务目录下的配置文件
+4. **config.yaml** - 服务目录下的配置文件（仅 Windows 本地部署时可用）
 
 5. **默认值** - `http://localhost:8000`, token 为 `token`
 
-## 启动服务
+### 服务目录搜索顺序（仅 Windows）
 
-首次使用前需要启动服务：
+1. `WXAPI_SERVICE_DIR` 环境变量指定的路径
+2. `~/.wxautox/service_status.json` 中记录的 `service_dir`
+3. `../wxauto-restful-api`（相对于 skill 目录）
+4. `~/wxauto-restful-api`
 
-```powershell
-# 进入服务目录
-cd /path/to/wxauto-restful-api
-```
+## 启动服务（仅 Windows）
 
-# 启动服务
-```
-python run.py
-```
+> macOS / Linux 用户无需执行此节，直接使用远程服务地址即可。
 
-或后台启动（Windows）：
+**前置要求**：
 
-```powershell
-Start-Process python -ArgumentList "run.py" -WorkingDirectory "C:\path\to\wxauto-restful-api" -WindowStyle Hidden
-```
+1. 安装 wxautox4：
+   ```powershell
+   pip install wxautox4
+   ```
+   > 需 Windows 系统，Python 3.9–3.12 64 位
 
-如果服务已运行，脚本会自动连接；如果服务未运行且配置了服务目录，脚本会自动启动服务。
+2. 激活 wxautox4：
+   ```powershell
+   wxautox4 -a your-activation-code
+   ```
+   > 获取激活码：https://docs.wxauto.org/plus
+
+3. 部署并启动 API 服务：
+   ```powershell
+   # 进入服务目录
+   cd C:\path\to\wxauto-restful-api
+   # 启动服务
+   python run.py
+   ```
+
+   或后台启动：
+   ```powershell
+   Start-Process python -ArgumentList "run.py" -WorkingDirectory "C:\path\to\wxauto-restful-api" -WindowStyle Hidden
+   ```
 
 ## 脚本路径
 
@@ -291,24 +291,41 @@ print(resp.json())
 
 ## 服务未运行时的处理
 
+### 非 Windows 设备
+
+无法在本地启动服务。**不要直接报错**，使用询问工具询问用户：
+
+提问内容：「当前设备（macOS/Linux）无法运行 wxautox4 服务，请提供运行在 Windows 设备上的远程服务信息」
+
+需要用户提供：
+1. **服务地址**（如 `http://192.168.1.100:8000`）
+2. **Bearer Token**（服务端 `config.yaml` 中 `auth.token` 的值，默认为 `token`）
+
+获取后做连通性验证，成功则继续执行用户原本的操作。
+
+---
+
+### Windows 设备
+
 当执行命令发现 wxauto-restful-api 服务未运行时，wxapi.py 会按以下顺序尝试自动恢复：
 
 1. 检查 `~/.wxautox/service_status.json` 中的 `service_dir` 定位项目路径
 2. 搜索默认路径（见上方搜索顺序）
 3. 找到项目目录后自动启动服务
 
-如果以上都无法定位到项目目录，**不要直接报错**，而是使用询问用户的相关工具（如有）询问用户，如没有相关工具可停止对话问用户：
+如果以上都无法定位到项目目录，**不要直接报错**，使用询问工具询问用户：
 
-提问内容：「wxauto-restful-api 服务未运行，是否需要我帮你自动部署并启动？」
+提问内容：「wxauto-restful-api 服务未运行，请选择处理方式」
 
 选项：
-1. **自动部署并启动** - 从 GitHub 克隆项目，安装依赖，启动服务（启动后项目路径会自动记录到 `service_status.json`，后续无需再次配置）
-2. **仅启动服务** - 服务目录已存在，只需启动（需用户提供路径）
-3. **跳过** - 用户自行处理
+1. **自动部署并启动本地服务** - 从 GitHub 克隆项目，安装依赖，启动服务（启动后路径自动记录到 `service_status.json`）
+2. **仅启动本地服务** - 服务目录已存在，只需启动（需用户提供路径）
+3. **连接远程服务** - 服务运行在其他 Windows 设备上，需提供服务地址和 Token
+4. **跳过** - 用户自行处理
 
-如果用户选择「自动部署并启动」，执行以下步骤：
+如果用户选择「自动部署并启动本地服务」，执行以下步骤：
 
-```bash
+```powershell
 # 1. 克隆项目到用户目录
 cd ~
 git clone https://github.com/cluic/wxauto-restful-api.git
@@ -318,8 +335,8 @@ cd wxauto-restful-api
 python -m venv .venv
 
 # 3. 激活虚拟环境并安装依赖
-# Windows:
-.venv/Scripts/activate && pip install -r requirements.txt
+.venv\Scripts\activate
+pip install -r requirements.txt
 
 # 4. 后台启动服务
 python run.py
@@ -329,7 +346,8 @@ python run.py
 
 ## 注意事项
 
-1. 微信客户端需要保持打开状态
-2. wxautox4 需要激活后才能使用
+1. 微信客户端需要在运行服务的 **Windows 设备**上保持打开状态
+2. wxautox4 需要激活后才能使用（仅 Windows 端需要）
 3. **不要用 PowerShell 直接调用 API**（中文编码问题），请使用 Python 脚本
-4. 修改 `config.yaml` 中的 `auth.token` 以增强安全性
+4. 修改服务端 `config.yaml` 中的 `auth.token` 以增强安全性
+5. **macOS / Linux 用户**：跳过所有本地安装步骤，仅需提供远程服务地址和 Token 即可使用全部功能
